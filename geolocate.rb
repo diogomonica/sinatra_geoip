@@ -3,6 +3,7 @@ require 'rubygems'
 require 'sinatra'
 require 'json'
 require 'geoip'
+require 'rack'
 
 configure do
   GEOIP = GeoIP.new('GeoLiteCity.dat')
