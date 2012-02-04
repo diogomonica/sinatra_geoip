@@ -9,7 +9,7 @@ configure do
   GEOIP = GeoIP.new('GeoLiteCity.dat')
 end
 
-get '/hi' do
+get '/locate' do
   response['Access-Control-Allow-Origin'] = "*"
   returnable = {:message => "you didn't supply an IP to geocode!"}
   if geoip_result = GEOIP.city(request.ip)
