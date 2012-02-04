@@ -1,0 +1,18 @@
+This is a very simple sinatra app, built to be run on heroku.
+
+It has only one endpoint: /locate , that returns a JSON with the location of the IP address of the requester (using MAXMIND's free location database).
+
+# Running locally
+
+git clone REPO
+bundle install
+bundle exec ruby geolocate.rb
+
+# Pushing to your own heroku instance
+
+git clone REPO
+cd REPO
+heroku create
+heroku addons:add newrelic:standard
+heroku config:add RACK_ENV=production
+git push heroku master
