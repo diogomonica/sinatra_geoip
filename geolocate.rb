@@ -17,10 +17,9 @@ end
 
 get '/locate' do
   response['Access-Control-Allow-Origin'] = "*"
-  returnable = {:message => "you didn't supply an IP to geocode!"}
+  result = {:message => "Something went wrong while geolocating your IP Address!"}.to_json
   if geoip_result = GEOIP.city(request.ip)
-    returnable = geoip_result.to_hash
+    result = geoip_result.to_hash
   end
-
-  returnable.to_json
+  result.to_json
 end
