@@ -23,3 +23,14 @@ get '/locate' do
   end
   result.to_json
 end
+
+post '/location_save' do
+  request.body.rewind
+  data = JSON.parse request.body.read
+  File.open('location_results.txt', 'w') {|f| f.write(data + "\n")}
+end
+
+get '/locations' do
+  f = File.open('location_results.txt')
+  f.readlines
+end
