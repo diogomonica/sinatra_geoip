@@ -4,6 +4,7 @@ require 'sinatra'
 require 'json'
 require 'geoip'
 require 'rack'
+require 'time'
 
 configure do
   GEOIP = GeoIP.new('GeoLiteCity.dat')
@@ -25,12 +26,17 @@ get '/locate' do
 end
 
 post '/location_save' do
-  request.body.rewind
-  data = JSON.parse request.body.read
-  File.open('location_results.txt', 'w') {|f| f.write(data + "\n")}
+  data = request.env["rack.input"].read
+  File.open('location_results.txt', 'w') {|f| f.write(Time.now.to_s + ';' + data)}
 end
 
 get '/locations' do
   f = File.open('location_results.txt')
   f.readlines
 end
+
+get '/' do
+  erb :vpn
+end
+
+  

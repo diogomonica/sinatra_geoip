@@ -1,0 +1,90 @@
+  <!DOCTYPE html>
+<html lang="en">
+  <head>
+   <meta charset="utf-8">
+    <title>VPN detection</title>
+    <meta name="description" content="Simple Like Like javascript page">
+    <meta name="author" content="Diogo Monica (diogomonica.com)">
+    <link href="http://twitter.github.com/bootstrap/assets/css/bootstrap.css" rel="stylesheet">
+    <style type="text/css">
+      body {
+        padding-top: 60px;
+        padding-bottom: 40px;
+      }
+    </style>
+    <script>
+      window.onload = function() {
+        var startPos;
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+	    compareWithIPLocation(position.coords.latitude, position.coords.longitude);
+          }, function(error) {
+            alert("Error occurred. Error code: " + error.code);
+          });
+        }
+      };
+      
+	function compareWithIPLocation(latitude, longitude) {
+	   var vpnDistance = 30; //km
+	   var xhr = new XMLHttpRequest();
+	   xhr.open('GET', 'http://furious-ocean-4996.heroku.com/locate');
+	   xhr.onload = function(e) {
+	      var data = JSON.parse(this.response);
+		 var distance = calculateDistance(latitude, longitude, data.latitude, data.longitude); 
+		 console.log("Distance: " + distance);
+		 document.getElementById("details").innerHTML = "HTML5 Latitude: " + latitude + " Longitude: " + longitude + "<br />" + " IP Latitude: " + data.latitude + " Longitude: " + data.longitude + "<br />" + "Distance: " + distance;
+		
+
+		 var xmlhttp = new XMLHttpRequest();
+     xmlhttp.open("POST","/location_save" );
+		 xmlhttp.send(latitude + ";" + longitude + ";" + data.latitude + ";" + data.longitude + ";" + distance);
+		
+		 if (distance > vpnDistance) {
+	            document.getElementById("vpn").innerHTML = "<div class='alert alert-error'><b>VPN detected!</b> You are currently accessing the internet over a VPN/Proxy</div>"
+ 		 } else {
+	            document.getElementById("vpn").innerHTML = "<div class='alert alert-success'><b>No VPN detected</b> Everything checks out.</div>"
+		 }
+	      }
+           xhr.send();
+	}
+
+      function calculateDistance(lat1, lon1, lat2, lon2) {
+        var R = 6371; // km
+        var dLat = (lat2-lat1).toRad();
+        var dLon = (lon2-lon1).toRad();
+        var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1.toRad()) * Math.cos(lat2.toRad()) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+        var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        var d = R * c;
+        return d;
+      }
+      Number.prototype.toRad = function() {
+        return this * Math.PI / 180;
+      }
+    </script>
+	</head>
+    <body>
+  <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="#">VPN Detector</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="hero-unit">
+        <h1>Are you currently using a VPN?</h1>
+	<p>
+	<div id="vpn"></div>
+	</p>
+      </div>
+    <p>
+    <div id="details">
+        N/A
+    </div>
+    </p>
+  </body>
+</html>
