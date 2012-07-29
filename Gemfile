@@ -4,6 +4,10 @@ gem "thin"
 gem "sinatra"
 gem "json"
 gem "geoip"
+gem "sinatra-activerecord"
+gem "activerecord"
+gem "rake"
+gem "mysql2"
 
 group :production do
   gem "newrelic_rpm"

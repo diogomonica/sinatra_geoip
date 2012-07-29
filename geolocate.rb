@@ -1,10 +1,15 @@
 require 'rubygems'
 
 require 'sinatra'
+require 'sinatra/activerecord'
 require 'json'
 require 'geoip'
 require 'rack'
 require 'time'
+
+class GeoipEntry < ActiveRecord::Base
+  validates_presence_of :entry
+end
 
 configure do
   GEOIP = GeoIP.new('GeoLiteCity.dat')
@@ -26,13 +31,15 @@ get '/locate' do
 end
 
 post '/location_save' do
-  data = request.env["rack.input"].read
-  File.open('location_results.txt', 'w') {|f| f.write(Time.now.to_s + ';' + data)}
+  GeoipEntry.create(:entry => Time.now.to_s + ';' + request.env["rack.input"].read)
 end
 
 get '/locations' do
-  f = File.open('location_results.txt')
-  f.readlines
+  entries = []
+  GeoipEntry.find(:all).each do |e|
+    entries << e.entry
+  end
+  entries.to_json
 end
 
 get '/' do
