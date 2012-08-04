@@ -6,6 +6,6 @@ class CreateGeoipEntries < ActiveRecord::Migration
   end
 
   def down
-  	drop_table :geoip_entries
+  	drop_table :geoip_entries, :entry, :string
   end
 end

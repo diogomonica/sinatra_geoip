@@ -8,7 +8,6 @@ require 'rack'
 require 'time'
 
 class GeoipEntry < ActiveRecord::Base
-  validates_presence_of :entry
 end
 
 configure do
@@ -31,7 +30,9 @@ get '/locate' do
 end
 
 post '/location_save' do
-  GeoipEntry.create(:entry => Time.now.to_s + ';' + request.env["rack.input"].read)
+  locations = request.env["rack.input"].read.split(';')
+  GeoipEntry.create(:ip_address => request.ip, :user_agent => request.user_agent, :w3c_latitude => locations[0],
+    :w3c_longitude => locations[1], :ip_latitude => locations[2], :ip_longitude => locations[3], :distance => locations[4])
 end
 
 get '/locations' do
